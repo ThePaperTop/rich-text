@@ -66,15 +66,49 @@ class FontSet(object):
             return self.cursive
 
 class Span(str):
-    def __new__(self, text, style):
+    def __new__(self, text, style, parent=None):
+        self.parent = parent
         return str.__new__(self, text)
     def __init__(self, text, style):
         self.style = style
+    def select_font(self, font_set):
+        
+        if self.style.font_role == font_roles.inherit:
+            role = self.parent.style.font_role
+        else:
+            role = self.style.font_role
+
+        font_family = font_set.by_role(role)
+
+        if self.style.is_bold and self.style.is_italic:
+            return font_family.bold_italic
+        elif self.style.is_bold:
+            return font_family.bold
+        elif self.style.is_italic:
+            return font_family.italic
+        else:
+            return font_family.regular
 
 class Block(list):
-    def __init__(self, *args, style):
-        list.__init__(self, args)
+    def __init__(self, *children, style):
+        list.__init__(self, children)
+        for child in children:
+            child.parent = self
         self.style = style
+        
+    def select_font(self, font_set):
+        role = self.style.font_role
+        font_family = font_set.by_role(role)
+
+        if self.style.is_bold and self.style.is_italic:
+            return font_family.bold_italic
+        elif self.style.is_bold:
+            return font_family.bold
+        elif self.style.is_italic:
+            return font_family.italic
+        else:
+            return font_family.regular
+
 
 class Document(list):
     def __init__(self,
@@ -187,7 +221,11 @@ if __name__ == "__main__":
                                     quotation_style,
                                     bulleted_style]
     
-    inline_styles = [InlineStyle("Significant",
+    inline_styles = [InlineStyle("Plain",
+                                 False,
+                                 False,
+                                 font_roles.inherit),
+                     InlineStyle("Significant",
                                  False,
                                  True,
                                  font_roles.inherit),
@@ -208,4 +246,15 @@ if __name__ == "__main__":
                                  True,
                                  font_roles.cursive)]
 
-    
+    block = Block(Span("This is a test.  ", inline_styles[1]),
+                  Span("Here is another test.", inline_styles[0]),
+                  style=paragraph_style)
+
+    #     def __init__(self, body, title, mono, cursive):
+    font_set = FontSet(FontFamily("DejaVu Serif"),
+                       FontFamily("URW Palatino"),
+                       FontFamily("Hack"),
+                       FontFamily("URW Chancery"))
+
+    print(block[0].select_font(font_set))
+    print(block.select_font(font_set))
