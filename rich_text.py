@@ -167,8 +167,8 @@ class BlockStyle(Style):
         else:
             self.next_style = next_style
 
-if __name__ == "__main__":
-
+def default_styles():
+    
     import math
 
     paragraph_style = BlockStyle("Paragraph",
@@ -225,15 +225,15 @@ if __name__ == "__main__":
                                  False,
                                  False,
                                  font_roles.inherit),
-                     InlineStyle("Significant",
-                                 False,
-                                 True,
-                                 font_roles.inherit),
                      InlineStyle("Emphatic",
+                                 False,
+                                 True,
+                                 font_roles.inherit),
+                     InlineStyle("Forceful",
                                  True,
                                  False,
                                  font_roles.inherit),
-                     InlineStyle("Doubly Emphatic",
+                     InlineStyle("Forcefully Emphatic",
                                  True,
                                  True,
                                  font_roles.inherit),
@@ -245,16 +245,30 @@ if __name__ == "__main__":
                                  False,
                                  True,
                                  font_roles.cursive)]
+    
+    return block_styles, inline_styles
 
-    block = Block(Span("This is a test.  ", inline_styles[1]),
-                  Span("Here is another test.", inline_styles[0]),
-                  style=paragraph_style)
+if __name__ == "__main__":
 
-    #     def __init__(self, body, title, mono, cursive):
+    block_styles, inline_styles = default_styles()
+    
     font_set = FontSet(FontFamily("DejaVu Serif"),
                        FontFamily("URW Palatino"),
                        FontFamily("Hack"),
                        FontFamily("URW Chancery"))
 
+    def get_style(style_list, name):
+        try:
+            return [style for style in style_list if style.name == name][0]
+        except IndexError:
+            return None
+
+    block = Block(Span("This is a test paragraph.  ",
+                       get_style(inline_styles, "Plain")),
+                  Span("This should be emphasized.  ",
+                       get_style(inline_styles, "Emphatic")),
+                  style=get_style(block_styles, "Paragraph"))
+
     print(block[0].select_font(font_set))
+    print(block[1].select_font(font_set))
     print(block.select_font(font_set))
