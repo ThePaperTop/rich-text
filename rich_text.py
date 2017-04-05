@@ -133,6 +133,9 @@ class InlineStyle(Style):
         self.is_bold = is_bold
         self.is_italic = is_italic
         self.font_role = font_role
+        
+        self.inline = True
+        self.block = False
 
 class BlockStyle(Style):
     def __init__(self,
@@ -161,6 +164,9 @@ class BlockStyle(Style):
         self.indent_right = indent_right
         self.space_before = space_before
         self.space_after = space_after
+
+        self.inline = False
+        self.block = True
         
         if next_style == None:
             self.next_style = self
@@ -213,7 +219,11 @@ def default_styles():
                                 False,
                                 font_roles.title,
                                 math.floor(12 + 3 * (5 - depth)),
-                                0, 0, 0, 10, 3,
+                                0,
+                                0,
+                                0,
+                                10,
+                                3,
                                 paragraph_style)
                      for depth in range(1, 6)]
 
@@ -263,12 +273,17 @@ if __name__ == "__main__":
         except IndexError:
             return None
 
-    block = Block(Span("This is a test paragraph.  ",
-                       get_style(inline_styles, "Plain")),
-                  Span("This should be emphasized.  ",
-                       get_style(inline_styles, "Emphatic")),
-                  style=get_style(block_styles, "Paragraph"))
+    doc = Document(Block(Block(Span("Here is a Heading",
+                                    get_style(inline_styles, "Plain")),
+                               style=block_styles[0]),
+                         Span("This is a test paragraph.  ",
+                              get_style(inline_styles, "Plain")),
+                         Span("This should be emphasized.  ",
+                              get_style(inline_styles, "Emphatic")),
+                         style=get_style(block_styles, "Paragraph")),
+                   title="A Test Document",
+                   author="Jason R. Fruit")
 
-    print(block[0].select_font(font_set))
-    print(block[1].select_font(font_set))
-    print(block.select_font(font_set))
+    from format import Htmlinator
+    h = Htmlinator()
+    print(h.htmlinate(doc))
