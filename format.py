@@ -37,14 +37,14 @@ class Htmlinator(object):
             if style.is_bulleted:
                 out.append("display: list-item;")
                 out.append("list-style-type: disc;")
-                out.append("list-style-position: inside")
+                out.append("list-style-position: inside;")
 
             out.append("font-size: %spt;" % style.point_size)
             out.append("text-indent: %spx;" % style.first_line_indent)
             out.append("padding-left: %spx;" % style.indent_left)
             out.append("padding-right: %spx;" % style.indent_right)
-            out.append("padding-top: %spx" % style.space_before)
-            out.append("padding-bottom: %spx" % style.space_after)
+            out.append("padding-top: %spx;" % style.space_before)
+            out.append("padding-bottom: %spx;" % style.space_after)
 
         return "\n".join(out)
     

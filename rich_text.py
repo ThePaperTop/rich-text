@@ -222,8 +222,8 @@ def default_styles():
                                 0,
                                 0,
                                 0,
+                                5 + 5 * (5 - depth),
                                 10,
-                                3,
                                 paragraph_style)
                      for depth in range(1, 6)]
 
@@ -260,6 +260,8 @@ def default_styles():
 
 if __name__ == "__main__":
 
+    import lipsum
+    
     block_styles, inline_styles = default_styles()
     
     font_set = FontSet(FontFamily("DejaVu Serif"),
@@ -276,6 +278,16 @@ if __name__ == "__main__":
     doc = Document(Block(Block(Span("Here is a Heading",
                                     get_style(inline_styles, "Plain")),
                                style=block_styles[0]),
+                         Span(lipsum.generate_paragraphs(1),
+                              get_style(inline_styles, "Plain")),
+                         Block(Span("Here is a Heading",
+                                    get_style(inline_styles, "Plain")),
+                               style=block_styles[1]),
+                         Span(lipsum.generate_paragraphs(1),
+                              get_style(inline_styles, "Plain")),
+                         Block(Span("Here is a Heading",
+                                    get_style(inline_styles, "Plain")),
+                               style=block_styles[2]),
                          Span("This is a test paragraph.  ",
                               get_style(inline_styles, "Plain")),
                          Span("This should be emphasized.  ",
