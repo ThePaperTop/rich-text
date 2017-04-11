@@ -1,7 +1,8 @@
 import rich_text
 
 class Htmlinator(object):
-    def __init__(self):
+    """Allows agents to convert PaperTop rich text to styled HTML."""
+    def __init__(self, font_set):
         self._doc_tmpl = """
 <html>
 <head>
@@ -19,19 +20,22 @@ class Htmlinator(object):
 
         self._span_tmpl = '<span style="%(style)s">%(content)s</span>'
 
+        self._font_set = font_set
 
     def _cssinate(self, style):
+        """Returns CSS to portray the specified style"""
         out = []
 
-        out.append("\\* %s *\\" % style.name)
-        
         if style.is_bold:
             out.append("font-weight: bold;")
             
         if style.is_italic:
             out.append("font-style: italic;")
 
-        # TODO: handle font-role
+        font = self._font_set.by_role(style.font_role)
+        
+        if font and font.regular:
+            out.append("font-family: %s;" % font.regular["name"])
 
         if style.block:
             if style.is_bulleted:
@@ -67,6 +71,7 @@ class Htmlinator(object):
             return self._format_span(element)
         
     def htmlinate(self, doc):
+        """Convert the specified document to styled HTML"""
         content = "\n".join(
             [self._format_block(block)
              for block in doc])

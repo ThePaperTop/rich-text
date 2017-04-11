@@ -264,8 +264,8 @@ if __name__ == "__main__":
     
     block_styles, inline_styles = default_styles()
     
-    font_set = FontSet(FontFamily("DejaVu Serif"),
-                       FontFamily("URW Palatino"),
+    font_set = FontSet(FontFamily("DejaVu Sans"),
+                       FontFamily("DejaVu Serif"),
                        FontFamily("Hack"),
                        FontFamily("URW Chancery"))
 
@@ -275,21 +275,23 @@ if __name__ == "__main__":
         except IndexError:
             return None
 
-    doc = Document(Block(Block(Span("Here is a Heading",
+    doc = Document(Block(Block(Span("Here is a Top-Level Heading",
                                     get_style(inline_styles, "Plain")),
                                style=block_styles[0]),
                          Span(lipsum.generate_paragraphs(1),
                               get_style(inline_styles, "Plain")),
-                         Block(Span("Here is a Heading",
+                         Block(Span("Here is a Smaller Heading",
                                     get_style(inline_styles, "Plain")),
                                style=block_styles[1]),
                          Span(lipsum.generate_paragraphs(1),
                               get_style(inline_styles, "Plain")),
-                         Block(Span("Here is a Heading",
+                         Block(Span("Here is an Even Smaller Heading",
                                     get_style(inline_styles, "Plain")),
                                style=block_styles[2]),
-                         Span("This is a test paragraph.  ",
+                         Span("This is a ",
                               get_style(inline_styles, "Plain")),
+                         Span("test paragraph.  ",
+                              get_style(inline_styles, "Forceful")),
                          Span("This should be emphasized.  ",
                               get_style(inline_styles, "Emphatic")),
                          style=get_style(block_styles, "Paragraph")),
@@ -297,5 +299,5 @@ if __name__ == "__main__":
                    author="Jason R. Fruit")
 
     from format import Htmlinator
-    h = Htmlinator()
+    h = Htmlinator(font_set)
     print(h.htmlinate(doc))
